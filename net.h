@@ -7,15 +7,19 @@
 #include <map>
 using namespace std;
 
-class red:protected enrutador{
+class net:protected router{
 private:
     map<string,int> changes {};
+    vector<string> routes {};
+    vector<string>* ptrRoutes = &routes;
 public:
     void readFile();
     void addToChanges(string);
-    void updateLocalData(vector<enrutador>*);
+    void updateLocalData(vector<router>*);
+    void calculateRoutes(vector<router>);
 
     void printChanges();
+    void printIndRoutes();
 };
 
 #endif // NET_H

@@ -10,13 +10,17 @@ using namespace std;
 
 int main()
 {
-    enrutador A, B, C, D, E, F, G;
-    vector<enrutador> enrutadores {A,B,C,D,E,F,G};
+    router A, B, C, D, E, F, G;
+    vector<router> enrutadores {A,B,C,D,E,F,G};
 
-    red red;
+    net red;
     red.readFile();
     //red.printChanges();
     red.updateLocalData(&enrutadores);
+
+    red.calculateRoutes(enrutadores);
+    red.printIndRoutes();
+
 
     return 0;
 }
