@@ -7,7 +7,15 @@
 #include <net.h>
 
 using namespace std;
-
+/*
+ * El archivo que se lee se llama 'routes.txt' y se encuentra en "../practica4/BD/routes.txt",
+ * cuando el programa se encuentre en el directorio "../practica4/".
+ *
+ * El programa reconoce como rutas a {A,B,C,D,E,F,G} exactas. Es decir, se deben escribir en mayuscula y sin caracter adicional alguno.
+ *
+ * El programa no diferencia entre 2 caminos de igual costo. Si esas rutas comparten la propiedad de ser las de menor costo,
+ * el programa va a mostrar la primera hallada.
+ */
 int main()
 {
     router A, B, C, D, E, F, G;

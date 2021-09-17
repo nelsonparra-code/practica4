@@ -6,7 +6,8 @@
 using namespace std;
 
 class router{
-public:
+    friend class net;
+protected:
     vector<int> costs          {-1,   -1,  -1,  -1,  -1,  -1,  -1};
     vector<char> connectionsAv {'x', 'x', 'x', 'x', 'x', 'x', 'x'};
     vector<int>* ptrCosts = &costs;

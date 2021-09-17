@@ -1,5 +1,4 @@
 #include <net.h>
-#include <functions.h>
 
 #include <iostream>
 #include <vector>
@@ -49,7 +48,8 @@ void net::addToChanges(string str){
         else if(str[i]!=','&&identifier==true) auxCost+=str[i];
         else identifier=true;
     }
-    changes[route]=stoi(auxCost);
+    int num = stoi(auxCost);
+    (*ptrChanges)[route]=num;
 }
 
 void net::updateLocalData(vector<router>* vctr){
@@ -84,18 +84,7 @@ void net::updateLocalData(vector<router>* vctr){
             }
         }
     }
-}
-
-void net::printChanges(){
-    for(auto it = changes.cbegin(); it != changes.cend(); it++){
-        cout<<(*it).first<<" -> "<<(*it).second<<endl;
-    }
-}
-
-void net::printIndRoutes(){
-    for(unsigned long long i=0;i<routes.size();i++){
-        cout<<routes[i]<<endl;
-    }
+    (*ptrChanges).clear();
 }
 
 void net::calculateRoutes(vector<router> vctr, char o, char e){
@@ -103,7 +92,7 @@ void net::calculateRoutes(vector<router> vctr, char o, char e){
         cout<<"El origen de la ruta es igual a la llegada de la misma. Cuesta 0."<<endl;
         return;
     }
-    (*ptrRoutes).empty();
+    (*ptrRoutes).clear();
     vector<char> routers {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
     int vctrSize = (vctr).size();
     for(int i=0;i<7;i++){
@@ -118,6 +107,10 @@ void net::calculateRoutes(vector<router> vctr, char o, char e){
     }
     vector<string> definitiveRoutes {};
     possibleRoutes(&definitiveRoutes, o, e);
+    if(definitiveRoutes.size()==0){
+        cout<<"La ruta destino: '"<<e<<"' no existe, o no se encuentra asociada al origen '"<<o<<"'."<<endl;
+        return;
+    }
     int actualCost=0, minCost=0;
     string minCostRoute="";
     for(unsigned long long i=0;i<definitiveRoutes.size();i++){
@@ -133,8 +126,7 @@ void net::calculateRoutes(vector<router> vctr, char o, char e){
             }
         }
     }
-    if(minCost==-1 || actualCost==-1) cout<<"La ruta destino: '"<<e<<"' no existe, o no se encuentra asociada al origen '"<<o<<"'."<<endl;
-    else cout<<"La ruta mas eficiente es: "<<minCostRoute<<" y cuesta "<<minCost<<endl;
+    cout<<"La ruta mas eficiente es: "<<minCostRoute<<" y cuesta "<<minCost<<endl;
 }
 
 void net::possibleRoutes(vector<string>* defRoutes, char origin, char end){
@@ -207,4 +199,25 @@ int net::calculateCost(vector<router>* vctr, string cad){
     }
 
     return totalCost;
+}
+
+void net::deleteRoutes(vector<string>* vctor, string route){
+    char letter = route[0];
+    int deleted=0, position=0;
+    long vectorSize = (*vctor).size(), iterations=0;
+    for(long i=0;i<vectorSize;i++){
+        if((*vctor)[i]==route){
+            position=i;
+            break;
+        }
+    }
+    for(long i=0;i<vectorSize;i++){
+        iterations++;
+        if((*vctor)[i][0]==letter||(*vctor)[i][1]==letter){
+            (*vctor).erase((*vctor).begin()+i);
+            if(iterations<=position) deleted++;
+            i--;
+            vectorSize = (*vctor).size();
+        }
+    }
 }
