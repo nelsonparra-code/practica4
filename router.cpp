@@ -10,6 +10,10 @@ void router::setCost(int newCost,int position){
     (*ptrCosts)[position] = newCost;
 }
 
+int router::getCost(int position){
+    return (*ptrCosts)[position];
+}
+
 void router::modifyConnection(char end,int position){
     (*ptrConnections)[position] = end;
 }

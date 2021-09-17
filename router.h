@@ -13,6 +13,7 @@ public:
     vector<char>* ptrConnections = &connectionsAv;
 
     void setCost(int,int);
+    int getCost(int);
     void modifyConnection(char,int);
     char getConnectionsElement(int);
 };

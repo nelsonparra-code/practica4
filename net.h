@@ -16,7 +16,10 @@ public:
     void readFile();
     void addToChanges(string);
     void updateLocalData(vector<router>*);
-    void calculateRoutes(vector<router>);
+    void calculateRoutes(vector<router>,char,char);
+    int calculateCost(vector<router>*,string);
+
+    void possibleRoutes(vector<string>*,char,char);
 
     void printChanges();
     void printIndRoutes();

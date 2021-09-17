@@ -1,4 +1,5 @@
 #include <net.h>
+#include <functions.h>
 
 #include <iostream>
 #include <vector>
@@ -50,6 +51,7 @@ void net::addToChanges(string str){
     }
     changes[route]=stoi(auxCost);
 }
+
 void net::updateLocalData(vector<router>* vctr){
     map<char,int> guide {{'A',0},{'B',1},{'C',2},{'D',3},{'E',4},{'F',5},{'G',6}};
     for(auto it = changes.cbegin(); it != changes.cend(); it++){
@@ -60,16 +62,25 @@ void net::updateLocalData(vector<router>* vctr){
             (*vctr)[indexO].setCost((*it).second, indexE);
             (*vctr)[indexE].setCost((*it).second, indexO);
 
-            (*vctr)[indexO].setCost(0, indexO);
-            (*vctr)[indexE].setCost(0, indexE);
-
             if((*it).second>=0){
                 (*vctr)[indexO].modifyConnection(end,indexE);
                 (*vctr)[indexE].modifyConnection(origin,indexO);
+                string toAddRoute="";
+                bool sit=true;
+                toAddRoute.push_back(origin);toAddRoute.push_back(end);
+                for(unsigned long long i=0;i<routes.size();i++){
+                    if(routes[i]==toAddRoute) sit=false;
+                }
+                if(sit==true) routes.push_back(toAddRoute);
             }
             else{
                 (*vctr)[indexO].modifyConnection('x',indexE);
                 (*vctr)[indexE].modifyConnection('x',indexO);
+                string toDeleteRoute="";
+                toDeleteRoute.push_back(origin);toDeleteRoute.push_back(end);
+                for(unsigned long long i=0;i<routes.size();i++){
+                    if(routes[i]==toDeleteRoute) routes.erase(routes.cbegin()+i);
+                }
             }
         }
     }
@@ -87,7 +98,11 @@ void net::printIndRoutes(){
     }
 }
 
-void net::calculateRoutes(vector<router> vctr){
+void net::calculateRoutes(vector<router> vctr, char o, char e){
+    if(o==e){
+        cout<<"El origen de la ruta es igual a la llegada de la misma. Cuesta 0."<<endl;
+        return;
+    }
     (*ptrRoutes).empty();
     vector<char> routers {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
     int vctrSize = (vctr).size();
@@ -101,4 +116,95 @@ void net::calculateRoutes(vector<router> vctr){
             }
         }
     }
+    vector<string> definitiveRoutes {};
+    possibleRoutes(&definitiveRoutes, o, e);
+    int actualCost=0, minCost=0;
+    string minCostRoute="";
+    for(unsigned long long i=0;i<definitiveRoutes.size();i++){
+        if(i==0){
+            minCost = calculateCost(&vctr,definitiveRoutes[i]);
+            minCostRoute = definitiveRoutes[i];
+        }
+        else{
+            actualCost = calculateCost(&vctr,definitiveRoutes[i]);
+            if(actualCost<minCost){
+                minCost = actualCost;
+                minCostRoute = definitiveRoutes[i];
+            }
+        }
+    }
+    if(minCost==-1 || actualCost==-1) cout<<"La ruta destino: '"<<e<<"' no existe, o no se encuentra asociada al origen '"<<o<<"'."<<endl;
+    else cout<<"La ruta mas eficiente es: "<<minCostRoute<<" y cuesta "<<minCost<<endl;
+}
+
+void net::possibleRoutes(vector<string>* defRoutes, char origin, char end){
+    vector<string> routesModified {};
+    vector<string> auxArray {};
+    routesModified = routes;
+
+    long routesQty = routes.size();
+
+    for(long i=0;i<routesQty;i++){
+        //routesQty = routesModified.size();
+        string aux = routes[i];
+        if(aux[0]==origin && aux[1]==end){
+            (*defRoutes).push_back(aux);
+            //routesModified.erase(routesModified.begin()+i);
+            //i--;
+        }
+        else{
+            auxArray = routesModified;
+            string newRoute = "", start;
+            if(aux[0]==origin){
+                newRoute+=aux;
+                deleteRoutes(&auxArray, aux);
+            }
+            routesModified = auxArray;
+            if(newRoute!=""){
+                for(long j=0;j<routesQty;j++){
+
+                    routesQty = auxArray.size();
+                    string aux2 = auxArray[j];
+                    int newRouteLength = newRoute.length();
+                    if(newRoute[newRouteLength-1]==aux2[0] && newRoute[newRouteLength-2]!=aux2[1]){
+                        newRoute+=aux2;
+                        deleteRoutes(&auxArray, aux2);
+                        j=-1;
+                        newRouteLength = newRoute.length();
+                        if(newRoute[0]==origin && newRoute[newRouteLength-1]==end){
+                            if(!notInArray((*defRoutes), newRoute)) newRoute=newRoute[0]+newRoute[1];
+                            else{
+                                (*defRoutes).push_back(newRoute);
+                                auxArray = routes;
+                                routesQty = auxArray.size();
+                                break;
+                            }
+                        }
+                        else if(auxArray.size()==0){
+                            routesModified.erase(routesModified.begin());
+                            auxArray=routesModified;
+                            j=-1;
+                            newRoute = aux;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+int net::calculateCost(vector<router>* vctr, string cad){
+    map<char,int> guide {{'A',0},{'B',1},{'C',2},{'D',3},{'E',4},{'F',5},{'G',6}};
+
+    string auxCad;
+    int totalCost=0;
+
+    for(unsigned long long i=0;i<cad.size();i+=2){
+        char o = cad[i];
+        char e = cad[i+1];
+        if((*vctr)[guide.find(o)->second].getCost(guide.find(e)->second)==-1) return -1;
+        totalCost+=(*vctr)[guide.find(o)->second].getCost(guide.find(e)->second);
+    }
+
+    return totalCost;
 }
