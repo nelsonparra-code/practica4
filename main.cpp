@@ -25,7 +25,9 @@ int main()
 
     int inputMethod,action=-1;
 
-    cout<<"\nPara leer de un archivo (routes.txt), seleccione (1).\n"
+    cout<<"Nota: El programa reconoce como rutas a {A,B,C,D,E,F,G} exactas.\n"
+        <<"Es decir, se deben escribir en mayuscula y sin caracter adicional alguno.\n\n"
+        <<"\nPara leer de un archivo (routes.txt), seleccione (1).\n"
         <<"Para ingresar rutas por consola, ingrese (2).\n";
     cin>>inputMethod;
 
@@ -34,8 +36,9 @@ int main()
         red.updateLocalData(ptrEnr);
     }
     else if(inputMethod==2){
-        cout<<"\nIngrese la ruta de la siguiente forma:\n"
-            <<"<enrutador origen><enrutador destino>,<costo ruta>\n";
+        cout<<"\nIngrese las rutas de la siguiente forma:\n"
+            <<"<enrutador origen><enrutador destino>,<costo ruta>\n"
+            <<"Para terminar el proceso, ingrese * \n";
         while(true){
             string inRoute;
             cout<<"~ ";
@@ -60,10 +63,10 @@ int main()
             red.calculateRoutes(enrutadores,_origin,_end);
         }
         else if(action==2){
-            cout<<"\nIngrese la ruta de la siguiente forma:\n"
+            cout<<"\nIngrese las rutas de la siguiente forma:\n"
                 <<"<enrutador origen><enrutador destino>,<costo ruta>\n"
                 <<"NOTAS:\n1. Para eliminar una conexion, ingrese -1 en el <costo ruta>\n"
-                <<"2. Para terminar el proceso, ingrese *.\n";
+                <<"2. Para terminar el proceso, ingrese * \n";
             while(true){
                 string inRoute;
                 cout<<"~ ";
